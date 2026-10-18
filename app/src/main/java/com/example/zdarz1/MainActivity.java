@@ -20,12 +20,41 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         textView = findViewById(R.id.textView);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        View.OnClickListener symbolListener =
+                v -> appendSymbol(((Button) v).getText().toString());
+
+        int[] symbolIds = {
+                R.id.button16,
+                R.id.button13,
+                R.id.button14,
+                R.id.button15,
+                R.id.button10,
+                R.id.button11,
+                R.id.button12,
+                R.id.button7,
+                R.id.button8,
+                R.id.button9,
+                R.id.button17  };
+
+        // Pętla przypisująca listener do każdego przycisku z tablicy
+        for (int id : symbolIds) {
+            findViewById(id).setOnClickListener(symbolListener);
+        }
     }
+
+    private void appendSymbol(String symbol) {
+
+            textView.setText(symbol);
+
+
+    }
+
 
     public void onClick0(View view) {
         textView.setText("0");
@@ -47,3 +76,4 @@ public class MainActivity extends AppCompatActivity {
         textView.setText(Cyfra);
     }
 }
+

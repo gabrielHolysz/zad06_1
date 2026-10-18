@@ -1,31 +1,26 @@
 package com.example.zdarz1;
 
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
     private TextView textView;
 
+    private double firstNumber = 0;
+    private String selectedOperator = "";
+    private boolean isNewOperation = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
         textView = findViewById(R.id.textView);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
         View.OnClickListener symbolListener =
                 v -> appendSymbol(((Button) v).getText().toString());
 
@@ -40,40 +35,112 @@ public class MainActivity extends AppCompatActivity {
                 R.id.button7,
                 R.id.button8,
                 R.id.button9,
-                R.id.button17  };
+                R.id.button17
+        };
 
-        // Pętla przypisująca listener do każdego przycisku z tablicy
         for (int id : symbolIds) {
             findViewById(id).setOnClickListener(symbolListener);
         }
+
+
+        View.OnClickListener operatorListener = v -> {
+            Button b = (Button) v;
+            firstNumber = Double.parseDouble(textView.getText().toString().replace(",", "."));
+            selectedOperator = b.getText().toString();
+            isNewOperation = true;
+        };
+
+        int[] operatorIds = {
+                R.id.button3,
+                R.id.button4,
+                R.id.button5,
+                R.id.button6
+        };
+
+        for (int id : operatorIds) {
+            findViewById(id).setOnClickListener(operatorListener);
+        }
+
+
+        findViewById(R.id.button18).setOnClickListener(v -> calculateResult());
+
+
+        findViewById(R.id.button19).setOnClickListener(v -> clearAll());
     }
+
 
     private void appendSymbol(String symbol) {
+        String currentText = textView.getText().toString();
 
-            textView.setText(symbol);
+        if (isNewOperation) {
+            if (symbol.equals(",")) {
+                textView.setText("0,");
+            } else {
+                textView.setText(symbol);
+            }
+            isNewOperation = false;
+        } else {
 
-
+            if (symbol.equals(",")) {
+                if (!currentText.contains(",")) {
+                    textView.append(",");
+                }
+            } else {
+                if (currentText.equals("0")) {
+                    textView.setText(symbol);
+                } else {
+                    textView.append(symbol);
+                }
+            }
+        }
     }
 
 
-    public void onClick0(View view) {
+    private void calculateResult() {
+        if (selectedOperator.isEmpty()) return;
+
+        double secondNumber = Double.parseDouble(textView.getText().toString().replace(",", "."));
+        double result = 0;
+
+        switch (selectedOperator) {
+            case "+":
+                result = firstNumber + secondNumber;
+                break;
+            case "-":
+                result = firstNumber - secondNumber;
+                break;
+            case "x":
+                result = firstNumber * secondNumber;
+                break;
+            case "÷":
+                if (secondNumber == 0) {
+                    textView.setText("Błąd");
+                    isNewOperation = true;
+                    selectedOperator = "";
+                    return;
+                }
+                result = firstNumber / secondNumber;
+                break;
+        }
+
+
+        String resultText;
+        if (result == (long) result) {
+            resultText = String.format("%d", (long) result);
+        } else {
+            resultText = String.valueOf(result).replace(".", ",");
+        }
+
+        textView.setText(resultText);
+        isNewOperation = true;
+        selectedOperator = "";
+    }
+
+
+    private void clearAll() {
         textView.setText("0");
-    }
-
-
-    public void onClick1(View view) {
-        textView.setText("1");
-    }
-
-
-    public void onClick2(View view) {
-        textView.setText("2");
-    }
-
-    public void onClickCyfr(View view) {
-        Button button = (Button) view;
-        String Cyfra = button.getText().toString();
-        textView.setText(Cyfra);
+        firstNumber = 0;
+        selectedOperator = "";
+        isNewOperation = true;
     }
 }
-

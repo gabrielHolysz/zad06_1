@@ -2,6 +2,7 @@ package com.example.zdarz1;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,5 +39,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClick2(View view) {
         textView.setText("2");
+    }
+
+    public void onClickCyfr(View view) {
+        Button button = (Button) view;
+        String Cyfra = button.getText().toString();
+        textView.setText(Cyfra);
     }
 }
